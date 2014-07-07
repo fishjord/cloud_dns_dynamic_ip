@@ -53,10 +53,16 @@ def main():
 
     flags = parser.parse_args()
 
+    logging.getLogger('oauth2client.util').setLevel(logging.CRITICAL)
+    log = logging.getLogger('red.solr.clouddns')
+
+    if flags.logging_level:
+      log.setLevel(flags.logging_level)
+
     if flags.sub_domain == '':
-        print >>sys.stderr, ('Very Bad Things(tm) will happen if you '
+        log.critical(('Very Bad Things(tm) will happen if you '
                            'try to set the root record of your zone '
-                           'with this tool')
+                           'with this tool'))
         sys.exit(1)
 
     storage = Storage(os.path.expanduser('~/.cloud_dns_ip_sync_creds'))
@@ -101,18 +107,18 @@ def main():
         assert old_record.get('rrdatas', False)
         assert len(old_record['rrdatas']) == 1 
         if old_record['rrdatas'][0] == current_ip and not flags.pretend:
-            print >>sys.stderr, 'IP address unchanged, exiting'
+            log.debug('IP address unchanged, exiting')
             sys.exit(0)
 
         body['deletions'].append(old_record)
 
-    if flags.pretend:
-        print json.dumps(body, indent=1)
-    else:
+    log.info(json.dumps(body, indent=1))
+    if not flags.pretend:
         response = service.changes().create(
             project=flags.project_name,
             managedZone=flags.zone,
             body=body).execute()
+        log.info(response)
 
 if __name__ == '__main__':
     main()
