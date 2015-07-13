@@ -92,7 +92,7 @@ def main():
             next_soa_record(soa_record)],
         'deletions': [soa_record]}
 
-    resp, content = http.request('http://myexternalip.com/raw')
+    resp, content = http.request('http://ipv4.appspot.com/')
     current_ip = content.strip()
 
     new_record = {
