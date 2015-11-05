@@ -76,7 +76,7 @@ def main():
     http = httplib2.Http()
     auth_http = credentials.authorize(http)
 
-    service = build('dns', 'v1beta1', auth_http)
+    service = build('dns', 'v1', auth_http)
 
     records = service.resourceRecordSets().list(
         project=flags.project_name,
